@@ -96,6 +96,11 @@ impl Expr {
             Rule::number,
             "as_number() called with non digit rule"
         );
-        Expr::Number(pair.as_str().parse::<i32>().expect("Failed to parse int"))
+        Expr::Number(
+            pair.as_str()
+                .trim()
+                .parse::<i32>()
+                .expect("Failed to parse int"),
+        )
     }
 }
