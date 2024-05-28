@@ -1,6 +1,4 @@
-use pest::Parser;
-use simple_math_compiler_rs::ast::{Expr, ExprParser, Rule};
-use simple_math_compiler_rs::eval::eval;
+use simple_math_compiler_rs::compiler::Expr;
 use std::io::{self, Write};
 
 fn main() {
@@ -14,16 +12,7 @@ fn main() {
             break;
         }
 
-        match ExprParser::parse(Rule::subExpr, trim) {
-            Ok(pairs) => {
-                for pair in pairs {
-                    let expr: Expr = Expr::as_sub_expr(pair);
-                    println!("The answer is: {}", eval(expr));
-                }
-            }
-            Err(e) => {
-                println!("Error parsing expression: {}", e);
-            }
-        }
+        let expr = Expr::parse(trim);
+        println!("The answer is: {}", Expr::eval(expr));
     }
 }

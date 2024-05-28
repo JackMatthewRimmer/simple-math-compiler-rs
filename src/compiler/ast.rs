@@ -1,10 +1,46 @@
 use pest::iterators::{Pair, Pairs};
+use pest::Parser;
 use pest_derive::Parser;
 
+/// # ExprParser
+///
+/// via pest_derive this generates the parser based
+/// of our defined grammer.
+///
+/// # Notes on the grammar
+///
+/// The way our grammar works is that we have the lowest
+/// precdence operators at the top of the grammar. The
+/// reasoning for this is when we parse an expression
+/// it means the precedence is reflected in the parse tree
+/// and as we evaluate recursively anything that is lower
+/// in the parse tree will be evaluated first.
+///
+/// # Example
+/// 3 - 1 + 2
+///
+/// Will generate the AST...
+///
+/// Subtract(
+///     Number(3),
+///     Add(
+///         Number(1),
+///         Number(2)
+///     )
+/// )
+///
+/// Which then when we evaluate recursively
+/// the Add is evaluated first and then the
+/// Subtract is evaluted.
 #[derive(Parser)]
-#[grammar = "grammar.pest"]
-pub struct ExprParser {}
+#[grammar = "compiler/grammar.pest"]
+struct ExprParser {}
 
+/// # Expr
+/// This enum is our AST for our math expressions.
+/// It represents a math expression as a recursive data
+/// structure where an operation can contain sub expressions.
+/// which is either a Number or another operation.
 #[derive(Debug)]
 pub enum Expr {
     Number(i32),
@@ -15,8 +51,31 @@ pub enum Expr {
     Power(Box<Expr>, Box<Expr>),
 }
 
+/// In the impl block for expression we have some code
+/// to convert ['Pair'] which is pests type the parsing
+/// spits out into our ['Expr'] AST. We can then easily
+/// evaluate the AST with the super power of recursion.
 impl Expr {
-    pub fn as_sub_expr(pair: Pair<Rule>) -> Expr {
+    pub fn parse(input: &str) -> Expr {
+        let pair = ExprParser::parse(Rule::subExpr, input)
+            .unwrap()
+            .next()
+            .unwrap();
+        Self::as_sub_expr(pair)
+    }
+
+    pub fn eval(expr: Expr) -> f64 {
+        match expr {
+            Expr::Divide(e1, e2) => Self::eval(*e1) / Self::eval(*e2),
+            Expr::Multiply(e1, e2) => Self::eval(*e1) * Self::eval(*e2),
+            Expr::Add(e1, e2) => Self::eval(*e1) + Self::eval(*e2),
+            Expr::Subtract(e1, e2) => Self::eval(*e1) - Self::eval(*e2),
+            Expr::Power(e1, e2) => Self::eval(*e1).powf(Self::eval(*e2)),
+            Expr::Number(num) => num as f64,
+        }
+    }
+
+    fn as_sub_expr(pair: Pair<Rule>) -> Expr {
         let mut inner_rules: Pairs<Rule> = pair.clone().into_inner();
         let add_pair = inner_rules.next().expect("No add_pair provided");
         let add_expr: Expr = Self::as_add_expr(add_pair.clone());
