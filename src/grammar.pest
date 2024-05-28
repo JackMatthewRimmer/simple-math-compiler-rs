@@ -1,9 +1,10 @@
 WHITESPACE = _{ " " | "\t" | "\n" }
 
-expr = { addExpr ~ "-" ~ expr | addExpr }
+subExpr = { addExpr ~ "-" ~ subExpr | addExpr }
 addExpr = { mulExpr ~ "+" ~ addExpr | mulExpr }
 mulExpr = { divExpr ~ "*" ~ mulExpr | divExpr }
-divExpr = { factor ~ "/" ~ divExpr | factor }
-factor = { "(" ~ expr ~ ")" | number }
+divExpr = { powExpr ~ "/" ~ divExpr | powExpr }
+powExpr = { factor ~ "^" ~ powExpr | factor }
+factor = { "(" ~ subExpr ~ ")" | number }
 number = { digit+ }
 digit = {'0'..'9'}

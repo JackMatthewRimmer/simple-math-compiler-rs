@@ -3,9 +3,9 @@ use simple_math_compiler_rs::ast::{Expr, ExprParser, Rule};
 use simple_math_compiler_rs::eval::eval;
 
 fn main() {
-    let pairs = ExprParser::parse(Rule::expr, "10+2*3-2").unwrap();
+    let pairs = ExprParser::parse(Rule::subExpr, "6+2^2").unwrap();
     for pair in pairs {
-        let expr: Expr = Expr::as_expr(pair);
+        let expr: Expr = Expr::as_sub_expr(pair);
         println!("The answer is: {}", eval(expr))
     }
 }
