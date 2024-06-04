@@ -1,10 +1,12 @@
 WHITESPACE = _{ " " | "\t" | "\n" }
 
-subExpr = { addExpr ~ "-" ~ subExpr | addExpr }
-addExpr = { mulExpr ~ "+" ~ addExpr | mulExpr }
-mulExpr = { divExpr ~ "*" ~ mulExpr | divExpr }
-divExpr = { powExpr ~ "/" ~ divExpr | powExpr }
-powExpr = { factor ~ "^" ~ powExpr | factor }
-factor = { "(" ~ subExpr ~ ")" | number }
+sum = { (factor ~ sumOp)* ~ factor }
+factor = { (power ~ factorOp)* ~ power }
+power = { term ~ ("^" ~ power)? }
+term = { "(" ~ sum ~ ")" | number }
+
 number = { digit+ }
 digit = {'0'..'9'}
+
+sumOp = { "+" | "-" }
+factorOp = { "*" | "/" }

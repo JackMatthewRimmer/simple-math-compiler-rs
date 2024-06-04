@@ -1,2 +1,2 @@
 mod ast;
-pub use ast::Expr;
+pub use ast::{Expr, ExprParser, Rule};
