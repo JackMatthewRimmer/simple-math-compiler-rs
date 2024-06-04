@@ -1,4 +1,5 @@
-use simple_math_compiler_rs::compiler::Expr;
+use pest::Parser;
+use simple_math_compiler_rs::compiler::{Expr, ExprParser, Rule};
 use std::io::{self, Write};
 
 fn main() {
@@ -12,7 +13,8 @@ fn main() {
             break;
         }
 
-        let expr = Expr::parse(trim);
+        let pairs = ExprParser::parse(Rule::sum, trim).unwrap();
+        let expr = Expr::as_sum(pairs.into_iter().next().unwrap());
         println!("The answer is: {}", Expr::eval(expr));
     }
 }

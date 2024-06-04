@@ -1,16 +1,10 @@
-use pest::iterators::{Pair, Pairs};
+use pest::iterators::Pair;
 use pest::Parser;
 use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "compiler/grammar.pest"]
-struct ExprParser {}
-
-impl ExprParser {
-    pub fn parse_as_expr(input: &str) -> Expr {
-        unimplemented!()
-    }
-}
+pub struct ExprParser {}
 
 #[derive(Debug)]
 pub enum Expr {
@@ -66,7 +60,7 @@ impl Expr {
         }
     }
 
-    fn as_sum(pair: Pair<Rule>) -> Expr {
+    pub fn as_sum(pair: Pair<Rule>) -> Expr {
         let mut inner_rules = pair.into_inner();
         let mut expr = Self::as_factor(inner_rules.next().unwrap());
 
@@ -164,5 +158,103 @@ mod tests {
         let pairs = ExprParser::parse(Rule::sum, "7 - 3 - 2").unwrap();
         let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
         assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test3() {
+        let pairs = ExprParser::parse(Rule::sum, "5 + 4 * 2").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 13 as f64);
+    }
+
+    #[test]
+    fn test4() {
+        let pairs = ExprParser::parse(Rule::sum, "10 / 2 + 3").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 8 as f64);
+    }
+
+    #[test]
+    fn test5() {
+        let pairs = ExprParser::parse(Rule::sum, "2 ^ 3 + 4").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 12 as f64);
+    }
+
+    #[test]
+    fn test6() {
+        let pairs = ExprParser::parse(Rule::sum, "2 * (3 + 4)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 14 as f64);
+    }
+
+    #[test]
+    fn test7() {
+        let pairs = ExprParser::parse(Rule::sum, "8 / (2 * 2)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test8() {
+        let pairs = ExprParser::parse(Rule::sum, "2 ^ (3 + 2)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 32 as f64);
+    }
+
+    #[test]
+    fn test9() {
+        let pairs = ExprParser::parse(Rule::sum, "2 * 3 - 4").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test10() {
+        let pairs = ExprParser::parse(Rule::sum, "5 + 4 / 2").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 7 as f64);
+    }
+
+    #[test]
+    fn test11() {
+        let pairs = ExprParser::parse(Rule::sum, "2 ^ 3 - 1").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 7 as f64);
+    }
+
+    #[test]
+    fn test12() {
+        let pairs = ExprParser::parse(Rule::sum, "10 / (2 + 3)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test13() {
+        let pairs = ExprParser::parse(Rule::sum, "2 * (3 - 1)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 4 as f64);
+    }
+
+    #[test]
+    fn test14() {
+        let pairs = ExprParser::parse(Rule::sum, "8 / (2 ^ 2)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test15() {
+        let pairs = ExprParser::parse(Rule::sum, "2 ^ (3 - 2)").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 2 as f64);
+    }
+
+    #[test]
+    fn test16() {
+        let pairs = ExprParser::parse(Rule::sum, "(7-3-2) ^ 2").unwrap();
+        let pair = Expr::as_sum(pairs.into_iter().next().unwrap());
+        assert_eq!(Expr::eval(pair), 4 as f64);
     }
 }
