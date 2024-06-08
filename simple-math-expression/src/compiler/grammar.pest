@@ -1,0 +1,12 @@
+WHITESPACE = _{ " " | "\t" | "\n" }
+
+sum = { (factor ~ sumOp)* ~ factor }
+factor = { (power ~ factorOp)* ~ power }
+power = { term ~ ("^" ~ power)? }
+term = { "(" ~ sum ~ ")" | number }
+
+number = { digit+ }
+digit = {'0'..'9'}
+
+sumOp = { "+" | "-" }
+factorOp = { "*" | "/" }
