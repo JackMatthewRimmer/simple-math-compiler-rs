@@ -1,0 +1,16 @@
+WHITESPACE = _{ " " | "\t" | "\n" }
+
+// Here we have syntax definiton for actual expressions
+// We now want to parse a fucntion decl and a type rule
+
+sum = { (factor ~ sumOp)* ~ factor }
+factor = { (power ~ factorOp)* ~ power }
+power = { app ~ ("^" ~ power)? }
+app = { name ~ ("." ~ name)* ~ term | term }
+term = { "(" ~ sum ~ ")" | name | num }
+
+name = @{ ('a'..'z' | 'A'..'Z')+ }
+num = @{ ('0'..'9')+ }
+
+sumOp = { "+" | "-" }
+factorOp = { "*" | "/" }
